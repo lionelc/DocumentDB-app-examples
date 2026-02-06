@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Analytics Dashboard | DocumentDB Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">📊</span>
+                <span class="logo-text">Analytics</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-section="overview">
+                    <span class="nav-icon">🏠</span>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="nav-item" data-section="live-feed">
+                    <span class="nav-icon">📡</span>
+                    <span>Live Feed</span>
+                </a>
+                <a href="#" class="nav-item" data-section="data-quality">
+                    <span class="nav-icon">🔍</span>
+                    <span>Data Quality</span>
+                </a>
+                <a href="#" class="nav-item" data-section="sales">
+                    <span class="nav-icon">📈</span>
+                    <span>Sales Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-section="customers">
+                    <span class="nav-icon">👥</span>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="nav-item" data-section="inventory">
+                    <span class="nav-icon">📦</span>
+                    <span>Inventory</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-setup" class="btn btn-secondary btn-sm">
+                    🔄 Reset Data
+                </button>
+                <div class="db-badge">
+                    <span class="badge badge-success">DocumentDB</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 id="page-title">Dashboard Overview</h1>
+                <div class="header-actions">
+                    <div class="live-indicator" id="live-indicator">
+                        <span class="pulse"></span>
+                        <span class="live-text">LIVE</span>
+                        <span class="live-rate" id="live-rate">0 items/sec</span>
+                    </div>
+                    <span class="last-updated">Last updated: <span id="update-time">-</span></span>
+                    <button id="btn-refresh" class="btn btn-primary">
+                        ↻ Refresh
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="content">
+                <!-- Overview Section -->
+                <section id="section-overview" class="section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <h3 id="stat-customers">-</h3>
+                                <p>Total Customers</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-info">
+                                <h3 id="stat-products">-</h3>
+                                <p>Total Products</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🛒</div>
+                            <div class="stat-info">
+                                <h3 id="stat-orders">-</h3>
+                                <p>Total Orders</p>
+                            </div>
+                        </div>
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <h3 id="stat-revenue">-</h3>
+                                <p>Total Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <h3>Order Status Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-order-status"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Quick Stats</h3>
+                            <div class="quick-stats" id="quick-stats">
+                                <div class="quick-stat">
+                                    <span class="label">Avg Order Value</span>
+                                    <span class="value" id="avg-order-value">-</span>
+                                </div>
+                                <div class="quick-stat">
+                                    <span class="label">Orders Today</span>
+                                    <span class="value" id="orders-today">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Live Feed Section -->
+                <section id="section-live-feed" class="section">
+                    <div class="section-header">
+                        <h2>📡 Live Social Media Feed</h2>
+                        <p class="section-desc">Real-time social media comments and reviews streaming into DocumentDB</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-info">
+                                <h3 id="stream-rate">-</h3>
+                                <p>Items/Second</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💬</div>
+                            <div class="stat-info">
+                                <h3 id="total-social">-</h3>
+                                <p>Total Comments</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📝</div>
+                            <div class="stat-info">
+                                <h3 id="total-reviews">-</h3>
+                                <p>Total Reviews</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🕐</div>
+                            <div class="stat-info">
+                                <h3 id="recent-activity">-</h3>
+                                <p>Last Minute</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <h3>Sentiment Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-sentiment"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Source Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-sources"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="feed-header">
+                            <h3>Live Comments</h3>
+                            <div class="feed-filters">
+                                <select id="filter-sentiment" class="filter-select">
+                                    <option value="">All Sentiments</option>
+                                    <option value="positive">😊 Positive</option>
+                                    <option value="neutral">😐 Neutral</option>
+                                    <option value="negative">😞 Negative</option>
+                                </select>
+                                <select id="filter-source" class="filter-select">
+                                    <option value="">All Sources</option>
+                                    <option value="twitter">🐦 Twitter</option>
+                                    <option value="instagram">📷 Instagram</option>
+                                    <option value="facebook">📘 Facebook</option>
+                                    <option value="tiktok">🎵 TikTok</option>
+                                    <option value="reddit">🔴 Reddit</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="social-feed" id="social-feed">
+                            <!-- Comments will be populated here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Quality Section -->
+                <section id="section-data-quality" class="section">
+                    <div class="section-header">
+                        <h2>🔍 Data Quality - Referential Integrity Check</h2>
+                        <p class="section-desc">DocumentDB excels at finding orphaned records (4-6x faster than MongoDB)</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🏥</div>
+                            <div class="stat-info">
+                                <h3 id="health-score">-</h3>
+                                <p>Health Score</p>
+                            </div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-info">
+                                <h3 id="total-issues">-</h3>
+                                <p>Total Issues Found</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Data Quality Issues</h3>
+                        <div class="issues-list" id="issues-list">
+                            <!-- Issues will be populated here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sales Analytics Section -->
+                <section id="section-sales" class="section">
+                    <div class="section-header">
+                        <h2>📈 Sales Analytics - Multi-Collection Join</h2>
+                        <p class="section-desc">Complex 5-table joins optimized by PostgreSQL's query planner</p>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card wide">
+                            <h3>Revenue Trend (Last 90 Days)</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-revenue-trend"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <h3>Revenue by Category</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-category-revenue"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Top 10 Products</h3>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Units</th>
+                                            <th>Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="top-products-table">
+                                        <!-- Products will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Customers Section -->
+                <section id="section-customers" class="section">
+                    <div class="section-header">
+                        <h2>👥 Customer Analytics</h2>
+                        <p class="section-desc">Customer 360 view using multi-collection joins</p>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <h3>Customer Tier Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-customer-tiers"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card wide">
+                            <h3>Top Customers by Loyalty Points</h3>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>Email</th>
+                                            <th>Tier</th>
+                                            <th>Points</th>
+                                            <th>Orders</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customers-table">
+                                        <!-- Customers will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inventory Section -->
+                <section id="section-inventory" class="section">
+                    <div class="section-header">
+                        <h2>📦 Inventory Management - Complex Upsert</h2>
+                        <p class="section-desc">High-throughput upserts with conditional logic (PostgreSQL INSERT ON CONFLICT)</p>
+                    </div>
+
+                    <div class="action-bar">
+                        <button id="btn-sync-inventory" class="btn btn-primary">
+                            📡 Simulate Supplier Sync (100 items)
+                        </button>
+                        <span id="sync-status" class="status-text"></span>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <h3>Warehouse Summary</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-warehouse"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card wide">
+                            <h3>🚨 Low Stock Alerts</h3>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Warehouse</th>
+                                            <th>Available</th>
+                                            <th>Reorder Point</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="low-stock-table">
+                                        <!-- Low stock items will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
