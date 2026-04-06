@@ -81,6 +81,11 @@ Open your browser and navigate to:
 - **Dashboard**: http://localhost:5000
 - **API Overview**: http://localhost:5000/api/overview
 
+The UI looks like:
+
+<img width="1601" height="605" alt="image" src="https://github.com/user-attachments/assets/5d64cdbb-b59e-40b9-a7f9-12b46ed26696" />
+
+
 ## Dashboard Sections
 
 | Section | Description |
