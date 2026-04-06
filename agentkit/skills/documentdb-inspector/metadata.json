@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "organization": "DocumentDB Agent Kit",
+  "date": "April 2026",
+  "abstract": "Health-check and diagnostic tool for DocumentDB local Docker containers. Provides automated checks for Docker availability, image management, container lifecycle, port reachability, TLS configuration, and CRUD operations, with actionable error codes and fix suggestions.",
+  "references": [
+    "https://github.com/documentdb/documentdb",
+    "https://documentdb.io/docs"
+  ]
+}

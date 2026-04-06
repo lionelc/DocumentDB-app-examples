@@ -1,2 +1,2 @@
 # DocumentDB-app-examples
-Some DocumentDB examples with ready-to-use application code
+Some DocumentDB examples with ready-to-use application code, plus the agent-kit

@@ -1,0 +1,35 @@
+{
+  "name": "documentdb-agent-kit",
+  "version": "1.0.0",
+  "description": "DocumentDB inspector and diagnostics skill for AI coding agents",
+  "keywords": [
+    "documentdb",
+    "mongodb",
+    "inspector",
+    "diagnostics",
+    "agent-skills",
+    "ai",
+    "copilot",
+    "claude",
+    "agent-kit"
+  ],
+  "author": "DocumentDB Agent Kit",
+  "license": "MIT",
+  "homepage": "https://github.com/documentdb/documentdb",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/documentdb/documentdb-agent-kit.git"
+  },
+  "files": [
+    "skills/**/*"
+  ],
+  "scripts": {
+    "build": "node scripts/compile.js",
+    "validate": "node scripts/validate.js",
+    "test": "bash testing/harness/run-all-scenarios.sh"
+  },
+  "devDependencies": {
+    "glob": "^10.3.0",
+    "gray-matter": "^4.0.3"
+  }
+}
