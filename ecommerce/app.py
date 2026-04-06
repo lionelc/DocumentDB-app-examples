@@ -21,6 +21,7 @@ from pymongo.errors import OperationFailure
 from bson import ObjectId
 
 from generator import DataGenerator, seed_initial_data, cleanup_data
+import health_monitor
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -51,7 +52,7 @@ def serialize_doc(doc):
 # CONFIGURATION
 # ============================================================================
 
-DB_URI = "mongodb://YOUR_USERNAME:YOUR_PASSWORD@localhost:10260/?tls=true&tlsAllowInvalidCertificates=true&retryWrites=false&directConnection=true" 
+DB_URI = "mongodb://docdbadmin:Test1234@localhost:10260/?tls=true&tlsAllowInvalidCertificates=true&retryWrites=false&directConnection=true"
 DB_NAME = "ecommerce_demo"
 
 app = Flask(__name__)
@@ -87,6 +88,9 @@ def shutdown_handler():
     _shutdown_done = True
     
     print("\n[Server] Shutting down...")
+    
+    # Stop health monitor
+    health_monitor.stop()
     
     # Stop generator first
     if data_generator:
@@ -128,6 +132,9 @@ def initialize_server():
     data_generator.start()
     
     print(f"[Server] Data generator started at {rate} items/sec")
+    
+    # Start health monitor (runs inspector every HEALTH_CHECK_INTERVAL seconds)
+    health_monitor.start(run_immediately=True)
 
 
 # Register shutdown handler
@@ -146,6 +153,32 @@ def random_string(length: int = 8) -> str:
 def index():
     """Serve the main dashboard page."""
     return render_template('index.html')
+
+
+@app.route('/api/health')
+def get_health():
+    """
+    Database health endpoint — returns the latest inspector results.
+
+    The health monitor runs documentdb-inspector.sh every HEALTH_CHECK_INTERVAL
+    seconds (default: 1 hour) in the background. This endpoint returns the
+    most recent results without triggering a new check.
+
+    Response:
+        {
+            "status": "healthy" | "unhealthy" | "unknown",
+            "last_check": "2026-04-06T21:00:00+00:00",
+            "next_check": "2026-04-06T22:00:00+00:00",
+            "checks": [...],       // individual check results
+            "findings": [...],     // failed checks only
+            "check_count": 42,     // total checks since startup
+            "alert_count": 1,      // total alerts sent since startup
+            "consecutive_failures": 0
+        }
+    """
+    status = health_monitor.get_status()
+    http_code = 200 if status["status"] in ("healthy", "unknown") else 503
+    return jsonify(status), http_code
 
 
 @app.route('/api/overview')
